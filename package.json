@@ -1,0 +1,18 @@
+{
+  "name": "geektrust",
+  "version": "1.0.0",
+  "description": "geektrust-project",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon geektrust.js input1.txt",
+    "test": "mocha"
+  },
+  "author": "geektrust",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mocha": "^10.0.0",
+    "nodemon": "^2.0.22",
+    "process": "^0.11.10"
+  }
+}
