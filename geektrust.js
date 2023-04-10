@@ -34,9 +34,7 @@ module.exports = metroCard;
 
 // importing helper functions
 const { printSummary } = require("./summary");
-const { processBalanceCommand, processCheckInCommand } = require("./helperFn");
-
-let isServiceCharge = false;
+const { processBalanceCommand, processCheckInCommand } = require("./inputHandler");
 
 // input file data
 const data = fs.readFileSync(inputFilePath, "utf8");
@@ -55,8 +53,6 @@ inputLines.forEach((data, index) => {
   }
 });
 
-//  -------------------* --------------- * ----------------- * ----------------- * ----------------
-
 // central station object
 // store output summary of central station
 const centralStation = {
@@ -67,7 +63,6 @@ const centralStation = {
   noOfAdult: 0,
   noOfKid: 0,
 };
-module.exports = centralStation;
 
 // airport station object
 // store output summary of airport station
@@ -80,10 +75,10 @@ const airportStation = {
   noOfKid: 0,
 };
 
-module.exports = airportStation;
-
+// update stations
 const updateStationData = (stationData, cost, isServiceCharge, requiredAmount, type, i) => {
   let fare = cost;
+  
   if ((i + 1) % 2 === 0) {
     fare = fare - cost / 2;
 
@@ -110,32 +105,14 @@ const updateStationData = (stationData, cost, isServiceCharge, requiredAmount, t
         stationData.totalCollection + cost;
     }
   }
-
-  switch (type) {
-    case adult:
-      stationData.noOfAdult++;
-      break;
-    case kid:
-      stationData.noOfKid++;
-      break;
-    case senior:
-      stationData.noOfSenior++;
-      break;
-    default:
-      break;
-  }
+  if(type === adult) stationData.noOfAdult++;
+  else if(type === kid) stationData.noOfKid++;
+  else if(type === senior ) stationData.noOfSenior++;
 };
 
-const updateCentralStationData = (data, cost, isServiceCharge, requiredAmount, i) => {
-  updateStationData(centralStation, cost, isServiceCharge, requiredAmount, data.type, i);
-};
-
-const updateAirportStationData = (data, cost, isServiceCharge, requiredAmount, i) => {
-  updateStationData(airportStation, cost, isServiceCharge, requiredAmount, data.type, i);
-};
-
-const stationSummary = (data, cost, isServiceCharge) => {
+const stationSummary = (data, cost) => {
   let requiredAmount = 0;
+  let isServiceCharge = false;
 
   data.journey.map((station, i) => {
     let fare = cost;
@@ -148,35 +125,30 @@ const stationSummary = (data, cost, isServiceCharge) => {
 
     data.balance = data.balance - fare;
 
-    if (station === central) {
-      updateCentralStationData(data, cost, isServiceCharge, requiredAmount, i);
-    } else if (station === airport) {
-      updateAirportStationData(data, cost, isServiceCharge, requiredAmount, i);
-    }
+    if (station === central) 
+    updateStationData(centralStation, cost, isServiceCharge, requiredAmount, data.type, i);
+
+    else if (station === airport) 
+    updateStationData(airportStation, cost, isServiceCharge, requiredAmount, data.type, i);
   });
 };
 
-
-
-//  -------------------* --------------- * ----------------- * ----------------- * ----------------
-
+// filling station data by looping through metroCardData
 metroCard.forEach((data) => {
   switch (data.type) {
     case adult:
-      stationSummary(data, adultChargeCost, isServiceCharge);
+      stationSummary(data, adultChargeCost);
       break;
     case kid:
-      stationSummary(data, kidChargeCost, isServiceCharge);
+      stationSummary(data, kidChargeCost);
       break;
     case senior:
-      stationSummary(data, seniorChargeCost, isServiceCharge);
+      stationSummary(data, seniorChargeCost);
       break;
     default:
       break;
   }
 });
-
-//  -------------------* --------------- * ----------------- * ----------------- * ----------------
 
 // Print station details summary
 printSummary(centralStation);

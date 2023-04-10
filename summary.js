@@ -1,5 +1,6 @@
 // printing function for station summary
 const printSummary = (data) => {
+  console.log("");
   const { station, totalCollection, discount, noOfSenior, noOfAdult, noOfKid } =
     data;
   console.log(
@@ -15,8 +16,6 @@ const printSummary = (data) => {
   if (noOfAdult > 0) console.log("ADULT " + noOfAdult);
   if (noOfKid > 0) console.log("KID " + noOfKid);
   if (noOfSenior > 0) console.log("SENIOR_CITIZEN " + noOfSenior);
-
-  console.log("");
 };
 
 

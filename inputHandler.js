@@ -1,7 +1,4 @@
 const metroCard = require("./geektrust");
-const airportStation = require("./geektrust");
-const centralStation = require("./geektrust");
-const ServiceCharge = require("./geektrust");
 
 const processBalanceCommand = (result, index) => {
   let card = {
