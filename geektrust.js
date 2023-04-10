@@ -117,7 +117,7 @@ const stationSummary = (data, cost, isServiceCharge) => {
         centralStation.noOfAdult++;
       } else if (data.type === "KID") {
         centralStation.noOfKid++;
-      } else if (data.type === "SENIOR") {
+      } else if (data.type === "SENIOR_CITIZEN") {
         centralStation.noOfSenior++;
       }
     } else if (station === "AIRPORT") {
@@ -153,7 +153,7 @@ const stationSummary = (data, cost, isServiceCharge) => {
         airportStation.noOfAdult++;
       } else if (data.type === "KID") {
         airportStation.noOfKid++;
-      } else if (data.type === "SENIOR") {
+      } else if (data.type === "SENIOR_CITIZEN") {
         airportStation.noOfSenior++;
       }
     } else {
@@ -171,6 +171,7 @@ metroCard.forEach((data, index) => {
   } else if (data.type === "KID") {
     stationSummary(data, kidChargeCost, isServiceCharge);
   } else if (data.type === "SENIOR_CITIZEN") {
+    console.log("ldfsdlkfsdkl")
     stationSummary(data, seniorChargeCost, isServiceCharge);
   }
 
@@ -178,6 +179,9 @@ metroCard.forEach((data, index) => {
 });
 
 //  -------------------* --------------- * ----------------- * ----------------- * ----------------
+
+console.log(centralStation)
+console.log(metroCard)
 
 // Print station details summary
 printSummary(centralStation);
