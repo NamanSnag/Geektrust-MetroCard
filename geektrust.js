@@ -3,13 +3,24 @@ const path = require("path");
 
 // taking file name from second argument in node run
 const filename = process.argv[2];
-
+// file path
 const inputFilePath = path.join(__dirname, "sample_input", filename);
 
 // travel Charges as per person
 const adultChargeCost = 200;
 const seniorChargeCost = 100;
 const kidChargeCost = 50;
+
+// variables
+const adult = "ADULT";
+const kid = "KID";
+const senior = "SENIOR_CITIZEN";
+
+const central = "CENTRAL";
+const airport = "AIRPORT";
+
+const balance = "BALANCE";
+const checkIn = "CHECK_IN";
 
 // converted 2% into number by 100/2
 // so whenever we want to get the 2% of cost, By multiplying we get that
@@ -37,9 +48,9 @@ let inputLines = data.toString().split("\n");
 // Fill input entries in the array
 inputLines.forEach((data, index) => {
   const result = data.toString().split(" ");
-  if (result[0] === "BALANCE") {
+  if (result[0] === balance) {
     processBalanceCommand(result, index)
-  } else if (result[0] === "CHECK_IN") {
+  } else if (result[0] === checkIn) {
     processCheckInCommand(result);
   }
 });
@@ -49,7 +60,7 @@ inputLines.forEach((data, index) => {
 // central station object
 // store output summary of central station
 const centralStation = {
-  station: "CENTRAL",
+  station: central,
   totalCollection: 0,
   discount: 0,
   noOfSenior: 0,
@@ -61,7 +72,7 @@ module.exports = centralStation;
 // airport station object
 // store output summary of airport station
 const airportStation = {
-  station: "AIRPORT",
+  station: airport,
   totalCollection: 0,
   discount: 0,
   noOfSenior: 0,
@@ -70,6 +81,58 @@ const airportStation = {
 };
 
 module.exports = airportStation;
+
+const updateStationData = (stationData, cost, isServiceCharge, requiredAmount, type, i) => {
+  let fare = cost;
+  if ((i + 1) % 2 === 0) {
+    fare = fare - cost / 2;
+
+    if (isServiceCharge) {
+      stationData.totalCollection =
+        stationData.totalCollection +
+        cost / 2 +
+        (requiredAmount / 2) * ServiceCharge;
+      isServiceCharge = false;
+    } else {
+      stationData.totalCollection =
+        stationData.totalCollection + cost / 2;
+    }
+    stationData.discount = stationData.discount + cost / 2;
+  } else {
+    if (isServiceCharge) {
+      stationData.totalCollection =
+        stationData.totalCollection +
+        cost +
+        requiredAmount * ServiceCharge;
+      isServiceCharge = false;
+    } else {
+      stationData.totalCollection =
+        stationData.totalCollection + cost;
+    }
+  }
+
+  switch (type) {
+    case adult:
+      stationData.noOfAdult++;
+      break;
+    case kid:
+      stationData.noOfKid++;
+      break;
+    case senior:
+      stationData.noOfSenior++;
+      break;
+    default:
+      break;
+  }
+};
+
+const updateCentralStationData = (data, cost, isServiceCharge, requiredAmount, i) => {
+  updateStationData(centralStation, cost, isServiceCharge, requiredAmount, data.type, i);
+};
+
+const updateAirportStationData = (data, cost, isServiceCharge, requiredAmount, i) => {
+  updateStationData(airportStation, cost, isServiceCharge, requiredAmount, data.type, i);
+};
 
 const stationSummary = (data, cost, isServiceCharge) => {
   let requiredAmount = 0;
@@ -85,103 +148,35 @@ const stationSummary = (data, cost, isServiceCharge) => {
 
     data.balance = data.balance - fare;
 
-    if (station === "CENTRAL") {
-      if ((i + 1) % 2 === 0) {
-        fare = fare - cost / 2;
-
-        if (isServiceCharge) {
-          centralStation.totalCollection =
-            centralStation.totalCollection +
-            cost / 2 +
-            (requiredAmount/2) * ServiceCharge;
-          isServiceCharge = false;
-        } else {
-          centralStation.totalCollection =
-            centralStation.totalCollection + cost / 2;
-        }
-        centralStation.discount = centralStation.discount + cost / 2;
-      } else {
-        if (isServiceCharge) {
-          centralStation.totalCollection =
-            centralStation.totalCollection +
-            cost +
-            requiredAmount * ServiceCharge;
-          isServiceCharge = false;
-        } else {
-          centralStation.totalCollection =
-            centralStation.totalCollection + cost;
-        }
-      }
-
-      if (data.type === "ADULT") {
-        centralStation.noOfAdult++;
-      } else if (data.type === "KID") {
-        centralStation.noOfKid++;
-      } else if (data.type === "SENIOR_CITIZEN") {
-        centralStation.noOfSenior++;
-      }
-    } else if (station === "AIRPORT") {
-      if ((i + 1) % 2 === 0) {
-        fare = fare - cost / 2;
-
-        if (isServiceCharge) {
-          airportStation.totalCollection =
-            airportStation.totalCollection +
-            cost / 2 +
-            (requiredAmount/2) * ServiceCharge;
-          isServiceCharge = false;
-        } else {
-          airportStation.totalCollection =
-            airportStation.totalCollection + cost / 2;
-
-        }
-        airportStation.discount = airportStation.discount + cost / 2;
-      } else {
-        if (isServiceCharge) {
-          airportStation.totalCollection =
-            airportStation.totalCollection +
-            cost +
-            requiredAmount * ServiceCharge;
-          isServiceCharge = false;
-        } else {
-          airportStation.totalCollection =
-            airportStation.totalCollection + cost;
-        }
-      }
-
-      if (data.type === "ADULT") {
-        airportStation.noOfAdult++;
-      } else if (data.type === "KID") {
-        airportStation.noOfKid++;
-      } else if (data.type === "SENIOR_CITIZEN") {
-        airportStation.noOfSenior++;
-      }
-    } else {
-      // handle invalid station
+    if (station === central) {
+      updateCentralStationData(data, cost, isServiceCharge, requiredAmount, i);
+    } else if (station === airport) {
+      updateAirportStationData(data, cost, isServiceCharge, requiredAmount, i);
     }
   });
 };
 
 
+
 //  -------------------* --------------- * ----------------- * ----------------- * ----------------
 
-metroCard.forEach((data, index) => {
-  if (data.type === "ADULT") {
-    stationSummary(data, adultChargeCost, isServiceCharge);
-  } else if (data.type === "KID") {
-    stationSummary(data, kidChargeCost, isServiceCharge);
-  } else if (data.type === "SENIOR_CITIZEN") {
-    console.log("ldfsdlkfsdkl")
-    stationSummary(data, seniorChargeCost, isServiceCharge);
+metroCard.forEach((data) => {
+  switch (data.type) {
+    case adult:
+      stationSummary(data, adultChargeCost, isServiceCharge);
+      break;
+    case kid:
+      stationSummary(data, kidChargeCost, isServiceCharge);
+      break;
+    case senior:
+      stationSummary(data, seniorChargeCost, isServiceCharge);
+      break;
+    default:
+      break;
   }
-
-  // console.log(data.balance);
 });
 
 //  -------------------* --------------- * ----------------- * ----------------- * ----------------
-
-console.log(centralStation)
-console.log(metroCard)
 
 // Print station details summary
 printSummary(centralStation);
