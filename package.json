@@ -4,7 +4,7 @@
   "description": "geektrust-project",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon geektrust.js input2.txt",
+    "start": "nodemon geektrust.js input1.txt",
     "test": "mocha"
   },
   "author": "geektrust",
